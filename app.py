@@ -1,5 +1,6 @@
 import pickle
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, render_template
+import pandas as pd
 import numpy as np
 
 # Starting the WebApp Development
@@ -11,26 +12,36 @@ clmodel = pickle.load(open('clmodel.pkl', 'rb'))
 # Making routes
 @app.route('/')
 def home():
-    return render_template('home.html')
+    return render_template('home.html', prediction_text='')
 
-@app.route('/predict_api', methods=['POST'])
-def predict_api():
-    data = request.json['data']
-    
-    # Convert dictionary to NumPy array
-    input_data = np.array(list(data.values()))
-    
-    # Perform any necessary preprocessing on the input_data
-    
+@app.route('/predict', methods=['POST'])
+def predict():
+    data = {
+        'Pregnancies': [float(request.form['Pregnancies'])],
+        'Glucose': [float(request.form['Glucose'])],
+        'BloodPressure': [float(request.form['BloodPressure'])],
+        'SkinThickness': [float(request.form['SkinThickness'])],
+        'Insulin': [float(request.form['Insulin'])],
+        'BMI': [float(request.form['BMI'])],
+        'DiabetesPedigreeFunction': [float(request.form['DiabetesPedigreeFunction'])],
+        'Age': [float(request.form['Age'])]
+    }
+
     try:
-        output = clmodel.predict(input_data.reshape(1, -1))
-        predicted_value = int(output[0])  # Convert to int
-        
-        return jsonify({'predicted_value': predicted_value})
+        input_data = pd.DataFrame(data)
+        output = clmodel.predict(input_data)
+        predicted_value = int(output[0])
+        prediction_text = ""
+        if(predicted_value == 1):
+            prediction_text = 'You have diabetes.'
+        else:
+            prediction_text = 'You do not have diabetes.'
+        return render_template('home.html', prediction_text=prediction_text)
     except Exception as e:
         error_message = str(e)
         app.logger.error(error_message)
-        return jsonify({'error': 'Prediction failed', 'error_message': error_message})
+        prediction_text = 'Prediction failed: {}'.format(error_message)
+        return render_template('home.html', prediction_text=prediction_text)
 
 if __name__ == "__main__":
     app.run(debug=True)
