@@ -1,7 +1,9 @@
 Flask
-sklearn
 pandas
 numpy
 matplotlib
 scikit-learn
 gunicorn
+scikit-learn
+xgboost
+waitress

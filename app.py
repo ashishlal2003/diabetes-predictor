@@ -1,7 +1,7 @@
 import pickle
 from flask import Flask, request, render_template
 import pandas as pd
-import numpy as np
+from waitress import serve
 
 # Starting the WebApp Development
 app = Flask(__name__)
@@ -32,7 +32,7 @@ def predict():
         output = clmodel.predict(input_data)
         predicted_value = int(output[0])
         prediction_text = ""
-        if(predicted_value == 1):
+        if predicted_value == 1:
             prediction_text = 'You have diabetes.'
         else:
             prediction_text = 'You do not have diabetes.'
@@ -44,4 +44,4 @@ def predict():
         return render_template('home.html', prediction_text=prediction_text)
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0")
+    serve(app, host='0.0.0.0', port=5000)
