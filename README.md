@@ -52,4 +52,4 @@ If you would like to contribute to the project, please fork the repository, make
 
 ## License
 
-The project is licensed under the [Apache-2.0 Licence](LICENSE.md). Please review the license file for more information.
+The project is licensed under the [Apache-2.0 Licence](LICENSE). Please review the license file for more information.
